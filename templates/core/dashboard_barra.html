@@ -1,0 +1,594 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Barra</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#5f7ba7;
+      --primary-soft:#b9c8df;
+      --secondary:#8fb4d9;
+      --warning:#e6d4a3;
+      --danger:#e58a8a;
+      --bg:#0b111c;
+      --panel:#121a27;
+      --panel-hover:#172133;
+      --border:rgba(95,123,167,0.32);
+      --muted:#9fb1c6;
+      --text:#e7ebf3;
+    }
+    body{
+      background:radial-gradient(circle at 18% 18%,rgba(95,123,167,0.08),transparent 32%),
+                 radial-gradient(circle at 80% 12%,rgba(143,180,217,0.07),transparent 28%),
+                 linear-gradient(160deg,#0b111c,#0d1524 55%,#0b111c);
+      color:var(--text);
+      font-family:'Inter','Segoe UI',system-ui,sans-serif;
+      line-height:1.55;
+    }
+    .navbar{
+      background:rgba(12,18,32,0.92)!important;
+      border-bottom:1px solid var(--border);
+      backdrop-filter:blur(6px);
+    }
+    .navbar-brand{
+      display:flex;
+      align-items:center;
+      gap:.65rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--text);
+    }
+    .navbar-logo{
+      width:42px;
+      height:42px;
+      object-fit:contain;
+      filter:drop-shadow(0 0 6px rgba(77,161,255,0.45));
+    }
+    .search-input{
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:10px;
+      transition:border-color .2s ease,box-shadow .2s ease;
+    }
+    .search-input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 0.16rem rgba(77,161,255,0.2);
+      color:var(--text);
+    }
+    .search-input::placeholder{color:rgba(148,168,195,0.65)}
+    .table-box{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 16px 38px rgba(0,0,0,0.28);
+    }
+    .table-responsive{
+      max-height:60vh;
+      overflow:auto;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:rgba(16,25,42,0.8);
+    }
+    table{color:var(--text)}
+    thead th{
+      position:sticky;
+      top:0;
+      background:rgba(17,26,44,0.95);
+      border-bottom:1px solid rgba(77,161,255,0.2);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:.8rem;
+      color:var(--muted);
+    }
+    tbody tr:hover{background:rgba(22,38,62,0.65);}
+    tfoot th{
+      background:rgba(16,26,45,0.95);
+      border-top:1px solid rgba(77,161,255,0.2);
+    }
+    .qty-box{display:flex;align-items:center;gap:.35rem}
+    .qty-input{
+      width:72px;
+      text-align:center;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:8px;
+    }
+    .btn-qty{
+      padding:2px 12px;
+      line-height:1;
+      border-radius:8px;
+      border-color:var(--border)!important;
+      color:var(--text);
+    }
+    .money{color:var(--secondary);font-weight:700}
+    .muted{color:var(--muted)}
+    .sticky-actions{position:sticky;bottom:0;z-index:1}
+    .badge-stock{
+      font-size:.78rem;
+      border-radius:999px;
+      padding:.35rem .6rem;
+      font-weight:600;
+      letter-spacing:.03em;
+    }
+    .badge-stock.badge-success{background:rgba(77,161,255,0.16);color:var(--text);}
+    .badge-stock.badge-warning{background:rgba(245,212,130,0.18);color:var(--warning);}
+    .badge-stock.badge-danger{background:rgba(255,107,107,0.2);color:var(--danger);}
+    .btn-wide{min-width:150px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+    .btn-outline-success,.btn-outline-primary,.btn-outline-info,.btn-outline-warning,.btn-outline-danger{
+      border-radius:10px;
+      font-weight:600;
+      letter-spacing:.04em;
+    }
+    .btn-success{
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#061428;
+      font-weight:700;
+      letter-spacing:.05em;
+    }
+    .btn-success:hover{background:#6b8eb8;border-color:#6b8eb8;color:#04101d;}
+    .btn-danger{
+      background:var(--danger);
+      border-color:var(--danger);
+      color:#fff;
+    }
+    .btn-danger:hover{background:#dd7676;border-color:#d96a6a;}
+    .btn-outline-success{border-color:var(--primary);color:var(--primary)}
+    .btn-outline-success:hover{background:var(--primary);color:#061428}
+    .btn-outline-primary{border-color:var(--secondary);color:var(--secondary)}
+    .btn-outline-primary:hover{background:var(--secondary);color:#04141d}
+    .btn-outline-info{border-color:rgba(126,224,255,0.6);color:var(--secondary)}
+    .btn-outline-info:hover{background:rgba(126,224,255,0.2)}
+    .btn-outline-warning{border-color:var(--warning);color:var(--warning)}
+    .btn-outline-warning:hover{background:var(--warning);color:#2c2412}
+    .btn-outline-danger{border-color:var(--danger);color:var(--danger)}
+    .btn-outline-danger:hover{background:var(--danger);color:#140505}
+    .modal-content{
+      background:rgba(17,26,44,0.96);
+      border:1px solid var(--border);
+      border-radius:16px;
+      color:var(--text);
+      backdrop-filter:blur(4px);
+    }
+    .modal-header,.modal-footer{border-color:var(--border);}
+    .form-label{color:var(--muted);text-transform:uppercase;font-size:.75rem;letter-spacing:.08em}
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-dark">
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <img src="{% static 'images/ZANN.png' %}" alt="Zann Event logo" class="navbar-logo">
+        <span>Zann Event - SISTEMA BARRA</span>
+      </div>
+      <div class="d-flex align-items-center">
+        <button class="btn btn-outline-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
+          <i class="fas fa-plus"></i> AGREGAR PRODUCTO
+        </button>
+        <button class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalSumarDescripcion">
+          <i class="fas fa-layer-group"></i> SUMAR DESCRIPCIÓN
+        </button>
+        <button class="btn btn-danger btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalActualizarStock">
+          <i class="fas fa-sync-alt"></i> ACTUALIZAR STOCK
+        </button>
+        <a href="{% url 'core:mis_ventas_barra' %}" class="btn btn-outline-info btn-sm me-3"><i class="fas fa-history"></i> MIS VENTAS</a>
+        <span class="text-light me-3">{{ user.username }} ({{ user.perfilusuario.get_rol_display }})</span>
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">LOGOUT</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-3">
+    <!-- BUSCADOR -->
+    <div class="mb-3">
+      <div class="input-group">
+        <span class="input-group-text" style="background:rgba(17,26,44,0.9);border-color:var(--border);color:var(--muted);"><i class="fas fa-search"></i></span>
+        <input id="search" class="form-control search-input" placeholder="Buscar producto... (nombre)" autocomplete="off">
+        <button id="clearSearch" class="btn btn-outline-warning"><i class="fas fa-times"></i> LIMPIAR</button>
+      </div>
+      <small class="muted">Mostrando <span id="shownCount">0</span> de <span id="totalCount">0</span> productos</small>
+    </div>
+
+    <!-- TABLA ÚNICA -->
+    <div class="table-box">
+      <div class="table-responsive">
+        <table class="table table-dark table-striped table-hover align-middle" id="tablaProductos">
+          <thead>
+            <tr>
+              <th style="min-width:240px">Producto</th>
+              <th style="min-width:110px">Precio</th>
+              <th style="min-width:110px">Stock</th>
+              <th style="min-width:220px">Cantidad</th>
+              <th style="min-width:140px">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if productos %}
+            {% for item in productos %}
+            <tr class="fila-prod"
+                data-id="{{ item.producto.id }}"
+                data-nombre="{{ item.producto.nombre|escapejs }}"
+                data-precio="{{ item.producto.precio }}"
+                data-stock="{{ item.producto.stock }}"
+                data-stockmin="{{ item.producto.stock_minimo|default:0 }}">
+              <td class="text-uppercase">
+                <div class="fw-semibold">{{ item.producto.nombre }}</div>
+                <div class="text-muted small">
+                  {% if item.stock_inicial_dia %}
+                  Inicio {{ item.stock_inicial_dia }} · Vendidos hoy {{ item.vendidos_hoy }}
+                  {% else %}
+                  Stock actual {{ item.producto.stock }}
+                  {% endif %}
+                </div>
+              </td>
+              <td>$<span class="precio">{{ item.producto.precio|floatformat:0 }}</span></td>
+              <td>
+                <span class="badge badge-stock badge-{{ item.color_stock }}">
+                  <i class="fas fa-box"></i>
+                  <span class="stock">{{ item.producto.stock }}</span>
+                </span>
+              </td>
+              <td>
+                <div class="qty-box">
+                  <button class="btn btn-sm btn-outline-danger btn-qty btn-minus" title="-1"><i class="fas fa-minus"></i></button>
+                  <input type="number" class="qty-input" min="0" value="0">
+                  <button class="btn btn-sm btn-outline-success btn-qty btn-plus" title="+1"><i class="fas fa-plus"></i></button>
+                </div>
+              </td>
+              <td>$<span class="subtotal">0</span></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="5" class="text-center">No hay productos configurados</td></tr>
+          {% endif %}
+          </tbody>
+          <tfoot>
+            <tr class="sticky-actions">
+              <th colspan="2">
+                <span class="me-2">Total:</span>
+                <span class="money" id="totalLabel">$0</span>
+              </th>
+              <th>
+                <div class="d-flex align-items-center gap-2">
+                  <label for="pagoCliente" class="me-1 mb-0">Pago</label>
+                  <input id="pagoCliente" type="number" step="1" class="form-control form-control-sm search-input" placeholder="Monto" style="max-width:140px">
+                  <div class="form-check ms-2">
+                    <input class="form-check-input" type="checkbox" id="autoPago" checked>
+                    <label class="form-check-label" for="autoPago" title="Mantener el pago igual al total hasta que escribas">Auto</label>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div><span class="me-1">Cambio:</span><span class="money" id="cambioLabel">$0</span></div>
+              </th>
+              <th class="text-end">
+                <button id="finalizarVenta" class="btn btn-success btn-wide"><i class="fas fa-check"></i> LISTO</button>
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES (Agregar / Sumar) -->
+  <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title text-uppercase small fw-bold">Agregar producto</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'core:crear_producto_rapido' %}" id="form-crear-producto">
+            {% csrf_token %}
+            <div class="row g-2">
+              <div class="col-md-4"><label class="form-label">Nombre</label><input name="nombre" class="form-control search-input" required></div>
+              <div class="col-md-2"><label class="form-label">Precio</label><input name="precio" type="number" step="0.01" class="form-control search-input" required></div>
+              <div class="col-md-2"><label class="form-label">Stock</label><input name="stock" type="number" class="form-control search-input" value="0" required></div>
+              <div class="col-md-2"><label class="form-label">Stock mín.</label><input name="stock_minimo" type="number" class="form-control search-input" value="5"></div>
+              <div class="col-md-12"><label class="form-label">Descripción (300 o 300+50)</label><input name="descripcion" class="form-control search-input"></div>
+            </div>
+            <div class="mt-3"><button class="btn btn-success btn-sm"><i class="fas fa-save"></i> Guardar</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalSumarDescripcion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title text-uppercase small fw-bold">Sumar a la descripción (+producto)</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'core:sumar_descripcion_producto' %}" id="form-sumar-descripcion">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Producto</label>
+              <select id="sumar-producto-id" name="producto_id" class="form-select search-input" required>
+                {% for item in productos %}
+                  <option value="{{ item.producto.id }}">{{ item.producto.nombre }} (desc: {{ item.producto.descripcion|default:'-' }})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Cantidad a sumar</label>
+              <input id="sumar-cantidad" name="cantidad" type="number" min="1" class="form-control search-input" placeholder="Ej. 50" required>
+            </div>
+            <div>
+              <button class="btn btn-outline-info btn-sm"><i class="fas fa-plus-circle"></i> Añadir “+cantidad”</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalActualizarStock" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title text-uppercase small fw-bold text-danger"><i class="fas fa-sync-alt"></i> Actualizar stock base</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'core:actualizar_stock_producto' %}" id="form-actualizar-stock">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Producto</label>
+              <select id="actualizar-producto-id" name="producto_id" class="form-select search-input" required>
+                {% for item in productos %}
+                  <option value="{{ item.producto.id }}">{{ item.producto.nombre }} (stock: {{ item.producto.stock }})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nuevo stock</label>
+              <input id="actualizar-nuevo-stock" name="nuevo_stock" type="number" min="0" class="form-control search-input" placeholder="Ej. 300" required>
+              <small class="muted d-block mt-1">El numero se guardara tambien en la descripcion para fijar el stock inicial del dia.</small>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-save"></i> ACTUALIZAR</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Utils
+    function getCookie(name){ const v=`; ${document.cookie}`.split(`; ${name}=`); return v.length===2? v.pop().split(';').shift(): null; }
+    function money(n){ return `$${Math.max(0, Math.round(n||0)).toLocaleString('es-CL')}`; }
+    function colorFor(remaining, min){ if(remaining<=0) return 'danger'; if(remaining<=min) return 'warning'; return 'success'; }
+
+    const tabla = document.getElementById('tablaProductos');
+    const tbody = tabla.querySelector('tbody');
+    const totalLabel = document.getElementById('totalLabel');
+    const pagoCliente = document.getElementById('pagoCliente');
+    const cambioLabel = document.getElementById('cambioLabel');
+    const autoPagoChk = document.getElementById('autoPago');
+
+    // Buscador
+    const search = document.getElementById('search');
+    const shownCount = document.getElementById('shownCount');
+    const totalCount = document.getElementById('totalCount');
+
+    function refreshCounters(){
+      const rows = [...tbody.querySelectorAll('.fila-prod')];
+      totalCount.textContent = rows.length;
+      shownCount.textContent = rows.filter(r=>r.style.display!=='none').length;
+    }
+
+    // Recalcula: subtotales, total, cambio y **stock restante visible en vivo**
+    function recalc(){
+      let total = 0;
+      tbody.querySelectorAll('.fila-prod').forEach(tr=>{
+        const precio = parseFloat(tr.dataset.precio||'0');
+        const stock = parseInt(tr.dataset.stock||tr.querySelector('.stock').dataset.base||'0',10);
+        const min   = parseInt(tr.dataset.stockmin||'0',10);
+        const qty   = parseInt(tr.querySelector('.qty-input').value||'0',10);
+
+        // Subtotal
+        const sub = precio * qty; total += sub; tr.querySelector('.subtotal').textContent = Math.round(sub);
+
+        // Stock restante (en vivo)
+        const remaining = Math.max(0, stock - qty);
+        const badge = tr.querySelector('.badge');
+        const stockSpan = tr.querySelector('.stock');
+        stockSpan.textContent = remaining; // mostrar el restante inmediato
+      badge.className = `badge badge-stock badge-${colorFor(remaining, min)}`;
+      });
+
+      // Total mostrado
+      totalLabel.textContent = money(total);
+
+      // === AUTO-PAGO ===
+      if(autoPagoChk.checked){
+        pagoCliente.value = Math.round(total); // sincroniza al momento
+      }
+
+      // Cambio inmediato
+      const pago = parseFloat(pagoCliente.value||'0');
+      cambioLabel.textContent = money(Math.max(0, pago - total));
+
+      return {total, pago};
+    }
+
+    // Eventos +/- y cantidad
+    function handlePlus(tr){
+      const input = tr.querySelector('.qty-input');
+      const stock = parseInt(tr.dataset.stock||tr.querySelector('.stock').dataset.base||'0',10);
+      let v = parseInt(input.value||'0',10); if(v < stock){ input.value = ++v; recalc(); }
+    }
+    function handleMinus(tr){
+      const input = tr.querySelector('.qty-input');
+      let v = parseInt(input.value||'0',10); if(v>0){ input.value = --v; recalc(); }
+    }
+
+    // Delegación tabla
+    tbody.addEventListener('click', e=>{
+      const tr = e.target.closest('tr.fila-prod'); if(!tr) return;
+      if(e.target.closest('.btn-plus')) return handlePlus(tr);
+      if(e.target.closest('.btn-minus')) return handleMinus(tr);
+    });
+    tbody.addEventListener('input', e=>{
+      if(e.target.classList.contains('qty-input')){
+        const tr = e.target.closest('tr.fila-prod');
+        const stock = parseInt(tr.dataset.stock||'0',10);
+        let v = parseInt(e.target.value||'0',10);
+        if(isNaN(v)||v<0) v=0; if(v>stock) v=stock; e.target.value=v; recalc();
+      }
+    });
+
+    // Pago del cliente: **actualiza cambio en vivo** y desactiva autoPago si escribe
+    pagoCliente.addEventListener('input', ()=>{ autoPagoChk.checked = false; recalc(); });
+
+    // AutoPago toggle → recalcula de inmediato para copiar total
+    autoPagoChk.addEventListener('change', recalc);
+
+    // Buscador
+    search.addEventListener('input', ()=>{
+      const term=(search.value||'').toLowerCase().trim();
+      tbody.querySelectorAll('.fila-prod').forEach(tr=>{
+        const nom=(tr.dataset.nombre||'').toLowerCase();
+        tr.style.display = !term || nom.includes(term) ? '' : 'none';
+      });
+      refreshCounters();
+    });
+    document.getElementById('clearSearch').addEventListener('click', ()=>{ search.value=''; search.dispatchEvent(new Event('input')); search.focus(); });
+
+    // Actualizar stock base manualmente (resetea descripcion)
+    const formActualizarStock = document.getElementById('form-actualizar-stock');
+    if(formActualizarStock){
+      formActualizarStock.addEventListener('submit', async (event)=>{
+        event.preventDefault();
+        const formData = new FormData(formActualizarStock);
+        const productoId = formData.get('producto_id');
+        const submitBtn = formActualizarStock.querySelector('button[type="submit"]') || formActualizarStock.querySelector('button');
+        const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+
+        if(submitBtn){
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ACTUALIZANDO...';
+        }
+
+        try{
+          const response = await fetch(formActualizarStock.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+          });
+          const data = await response.json().catch(()=>null);
+
+          if(!response.ok || !data || !data.success){
+            const message = (data && data.message) ? data.message : 'No se pudo actualizar el stock';
+            alert(message);
+            return;
+          }
+
+          if(productoId){
+            const tr = tbody.querySelector(`.fila-prod[data-id=\"${productoId}\"]`);
+            if(tr){
+              const nuevoStock = parseInt(data.nuevo_stock, 10);
+              tr.dataset.stock = String(Number.isFinite(nuevoStock) ? nuevoStock : 0);
+
+              const stockSpan = tr.querySelector('.stock');
+              if(stockSpan){
+                stockSpan.textContent = tr.dataset.stock;
+                stockSpan.dataset.base = tr.dataset.stock;
+              }
+
+              const badge = tr.querySelector('.badge-stock');
+              if(badge && data.color_stock){
+                badge.className = `badge badge-stock badge-${data.color_stock}`;
+              }
+
+              const qtyInput = tr.querySelector('.qty-input');
+              if(qtyInput){
+                let current = parseInt(qtyInput.value || '0', 10);
+                if(!Number.isFinite(current) || current > nuevoStock){
+                  qtyInput.value = Math.max(0, Number.isFinite(nuevoStock) ? nuevoStock : 0);
+                }
+              }
+
+              const infoBlock = tr.querySelector('.text-muted.small');
+              if(infoBlock && data.stock_inicial !== undefined && data.vendidos_hoy !== undefined){
+                infoBlock.textContent = `Inicio ${data.stock_inicial} - Vendidos hoy ${data.vendidos_hoy}`;
+              }
+            }
+          }
+
+          recalc();
+          refreshCounters();
+
+          const modalElement = document.getElementById('modalActualizarStock');
+          if(modalElement){
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if(modalInstance){
+              modalInstance.hide();
+            }
+          }
+
+          formActualizarStock.reset();
+          alert('Stock actualizado correctamente.');
+        }catch(error){
+          console.error('Error actualizando stock:', error);
+          alert('Error de conexion al actualizar stock.');
+        }finally{
+          if(submitBtn){
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHtml;
+          }
+        }
+      });
+    }
+
+    // Finalizar venta (envía una por ítem con qty>0, luego fija el stock visible)
+    document.getElementById('finalizarVenta').addEventListener('click', async()=>{
+      const items=[];
+      tbody.querySelectorAll('.fila-prod').forEach(tr=>{
+        const qty=parseInt(tr.querySelector('.qty-input').value||'0',10);
+        if(qty>0) items.push({id:parseInt(tr.dataset.id,10), nombre:tr.dataset.nombre, qty, tr});
+      });
+      if(items.length===0){ alert('No hay productos seleccionados.'); return; }
+
+      const csrftoken = getCookie('csrftoken');
+      for(const it of items){
+        const resp = await fetch('{% url "core:vender_producto" %}',{
+          method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':csrftoken},
+          body: JSON.stringify({producto_id: it.id, cantidad: it.qty})
+        }).catch(()=>null);
+        if(!resp){ alert(`Error de conexión al vender ${it.nombre}`); return; }
+        const data = await resp.json().catch(()=>({success:false}));
+        if(!data.success){ alert(data.message||`No se pudo vender ${it.nombre}`); return; }
+        // Fijar nuevo stock real devuelto por el backend
+        const nuevo = data.venta ? data.venta.nuevo_stock : (parseInt(it.tr.dataset.stock,10) - it.qty);
+        it.tr.dataset.stock = String(nuevo);
+        it.tr.querySelector('.qty-input').value = 0;
+        it.tr.querySelector('.subtotal').textContent = '0';
+        it.tr.querySelector('.stock').textContent = String(nuevo);
+        const min = parseInt(it.tr.dataset.stockmin||'0',10);
+        it.tr.querySelector('.badge').className = `badge badge-stock badge-${colorFor(nuevo, min)}`;
+      }
+      recalc();
+      alert('Venta finalizada correctamente.');
+    });
+
+    // Boot
+    (function init(){
+      tbody.querySelectorAll('.fila-prod').forEach(tr=>{
+        const span = tr.querySelector('.stock');
+        if(span) span.dataset.base = tr.dataset.stock;
+      });
+      refreshCounters();
+      recalc();
+    })();
+  </script>
+</body>
+</html>

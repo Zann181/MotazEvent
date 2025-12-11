@@ -1,0 +1,1516 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zann Event - Control Entrada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5f7ba7;
+            --primary-soft: #b9c8df;
+            --secondary: #8fb4d9;
+            --violet: #9faed0;
+            --bg: #0b111c;
+            --panel: #121a27;
+            --panel-hover: #172133;
+            --border: rgba(95, 123, 167, 0.32);
+            --text: #e7ebf3;
+            --muted: #9fb1c6;
+            --danger: #e58a8a;
+            --warning: #e6d4a3;
+        }
+        body {
+            background: radial-gradient(circle at 20% 18%, rgba(95, 123, 167, 0.08), transparent 36%),
+                        radial-gradient(circle at 78% 12%, rgba(143, 180, 217, 0.07), transparent 30%),
+                        linear-gradient(170deg, #0b111c, #0d1524 55%, #0b111c);
+            color: var(--text);
+            font-family: 'Inter','Segoe UI', system-ui, sans-serif;
+            line-height: 1.55;
+        }
+        .navbar {
+            background: rgba(12, 18, 32, 0.9) !important;
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid var(--border);
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+        .navbar-logo {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(77, 161, 255, 0.45));
+        }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 16px;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .card:hover {
+            background: var(--panel-hover);
+            border-color: rgba(77, 161, 255, 0.45);
+        }
+        .nav-tabs .nav-link {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--muted);
+        }
+        .nav-tabs .nav-link.active {
+            background: rgba(95, 123, 167, 0.16);
+            border-color: var(--border);
+            color: var(--text);
+            font-weight: 700;
+        }
+        .nav-tabs .nav-link:hover { color: var(--text); }
+        .btn-success {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #0a1323;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            color: #04141d;
+        }
+        .btn-excel {
+            background: var(--primary-soft);
+            border-color: var(--primary-soft);
+            color: #0b1c30;
+            font-weight: 700;
+        }
+        .btn-excel:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #0a1323;
+        }
+        .summary-card {
+            background: linear-gradient(145deg, rgba(95, 123, 167, 0.16), rgba(143, 180, 217, 0.08));
+            border: 1px solid var(--border);
+        }
+        .summary-card .total-value {
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            line-height: 1.1;
+            color: var(--text);
+        }
+        .summary-card .meta {
+            color: var(--muted);
+        }
+        .category-card-header {
+            border-bottom: 1px solid var(--border);
+        }
+        .category-card-collapse {
+            border-top: 1px solid rgba(77, 161, 255, 0.18);
+        }
+        .metric-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        .metric-pill.ingresaron {
+            background: rgba(95, 123, 167, 0.14);
+            color: var(--text);
+        }
+        .metric-pill.pendientes {
+            background: rgba(159, 174, 208, 0.16);
+            color: var(--violet);
+        }
+        .metric-pill.total {
+            background: rgba(143, 180, 217, 0.16);
+            color: var(--secondary);
+        }
+        .action-stack .btn {
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-radius: 10px;
+            transition: transform 0.15s ease, background 0.2s ease;
+        }
+        .action-stack .btn + .btn {
+            margin-top: 0.4rem;
+        }
+        .action-stack .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-qr {
+            background: rgba(143, 180, 217, 0.18);
+            color: var(--secondary);
+        }
+        .btn-qr:hover {
+            background: rgba(143, 180, 217, 0.28);
+            color: #0a1323;
+        }
+        .btn-edit {
+            background: rgba(95, 123, 167, 0.18);
+            color: var(--text);
+        }
+        .btn-edit:hover {
+            background: rgba(95, 123, 167, 0.3);
+            color: #0a1323;
+        }
+        .btn-delete {
+            background: rgba(229, 138, 138, 0.16);
+            color: var(--danger);
+        }
+        .btn-delete:hover {
+            background: rgba(229, 138, 138, 0.28);
+            color: #2a0b0b;
+        }
+        .accordion-button {
+            background: rgba(18, 26, 42, 0.88);
+            color: var(--muted);
+            border-radius: 10px;
+            box-shadow: inset 0 0 0 1px rgba(95, 123, 167, 0.12);
+        }
+        .accordion-button:not(.collapsed) {
+            color: var(--text);
+            background: rgba(23, 36, 58, 0.95);
+            box-shadow: inset 0 0 0 1px rgba(95, 123, 167, 0.24);
+        }
+        .accordion-button:focus {
+            border-color: var(--border);
+            box-shadow: 0 0 0 0.25rem rgba(95, 123, 167, 0.2);
+        }
+        .accordion-item {
+            background: rgba(15, 24, 36, 0.65);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .accordion-item + .accordion-item {
+            margin-top: 0.75rem;
+        }
+        .accordion-body {
+            background: rgba(17, 26, 40, 0.9);
+            border-top: 1px solid rgba(95, 123, 167, 0.15);
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(95, 123, 167, 0.22);
+            color: var(--text);
+        }
+        .table-dark {
+            --bs-table-bg: rgba(17, 26, 44, 0.88);
+            --bs-table-striped-bg: rgba(22, 34, 54, 0.9);
+            color: var(--text);
+        }
+        .alert-success {
+            background: rgba(95, 123, 167, 0.12);
+            border-color: var(--border);
+            color: var(--text);
+        }
+        .alert-danger {
+            background: rgba(229, 138, 138, 0.12);
+            border-color: rgba(229, 138, 138, 0.35);
+            color: var(--danger);
+        }
+        .alert-info {
+            background: rgba(143, 180, 217, 0.12);
+            border-color: rgba(143, 180, 217, 0.32);
+            color: var(--secondary);
+        }
+        .alert-warning {
+            background: rgba(230, 212, 163, 0.12);
+            border-color: rgba(230, 212, 163, 0.32);
+            color: var(--warning);
+        }
+        #reader {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: rgba(17, 26, 40, 0.7);
+        }
+        .form-label {
+            color: var(--muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+        }
+        .text-muted { color: var(--muted)!important; }
+        .text-success { color: var(--primary)!important; }
+        .text-warning { color: var(--warning)!important; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <img src="{% static 'images/ZANN.png' %}" alt="Zann Event logo" class="navbar-logo">
+                <span>Zann Event · Control Entrada</span>
+            </div>
+            <div>
+                <span class="text-light me-3">{{ user.username }} ({{ user.perfilusuario.get_rol_display }})</span>
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">LOGOUT</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <!-- Resumen compacto: categorías y total -->
+        <div id="dashboard-resumen" class="row g-3 mb-4 align-items-start">
+            <div class="col-12 col-xl-4">
+                <div class="card summary-card p-3">
+                    <span class="text-uppercase small text-muted">Total asistentes</span>
+                    <div class="total-value mb-2" data-number="{{ total_recaudado|default:'0' }}" data-format="currency">
+                        ${{ total_recaudado|default:"0" }}
+                    </div>
+                    <span class="meta small">
+                        Registros:
+                        <span data-number="{{ registros|default:'0' }}">{{ registros|default:"0" }}</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-8">
+                <div class="card h-100 p-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 category-card-header pb-2">
+                        <div class="text-uppercase small fw-bold" style="color: var(--neo-green-soft);">Categorías</div>
+                        {% if categorias %}
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge rounded-pill" style="background: rgba(57, 255, 20, 0.18); color: var(--neo-green);">{{ categorias|length }} activas</span>
+                            <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#categorias-collapse" aria-expanded="false" aria-controls="categorias-collapse">
+                                Detalle
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if categorias %}
+                    <div class="collapse category-card-collapse" id="categorias-collapse">
+                        <div class="accordion accordion-flush" id="categorias-accordion">
+                            {% for c in categorias %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="categoria-heading-{{ forloop.counter }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#categoria-body-{{ forloop.counter }}" aria-expanded="false" aria-controls="categoria-body-{{ forloop.counter }}">
+                                        <span class="flex-grow-1 d-flex justify-content-between align-items-center gap-3">
+                                            <span class="fw-bold text-uppercase small">{{ c.nombre }}</span>
+                                            <span class="metric-pill total">Total {{ c.total|default:"0" }}</span>
+                                        </span>
+                                    </button>
+                                </h2>
+                                <div id="categoria-body-{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#categorias-accordion">
+                                    <div class="accordion-body">
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="metric-pill ingresaron">Ingresaron {{ c.ingresados|default:"0" }}</span>
+                                            <span class="metric-pill pendientes">Pendientes {{ c.pendientes|default:"0" }}</span>
+                                            <span class="metric-pill total">Subtotal $ {{ c.subtotal|default:"0" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-success mt-3 small">Sin datos de categorías</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Tabs -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="mainTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="scanner-tab" data-bs-toggle="tab" data-bs-target="#scanner" type="button">
+                            <i class="fas fa-qrcode"></i> SCANNER QR
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="lista-tab" data-bs-toggle="tab" data-bs-target="#lista" type="button">
+                            <i class="fas fa-list"></i> LISTA ASISTENTES
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="crear-tab" data-bs-toggle="tab" data-bs-target="#crear" type="button">
+                            <i class="fas fa-plus"></i> NUEVO ASISTENTE
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                    <button class="nav-link" id="evento-tab" data-bs-toggle="tab" data-bs-target="#evento" type="button">
+                        <i class="fas fa-calendar-day"></i> DÍA DEL EVENTO
+                    </button>
+                    </li>
+
+
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="mainTabsContent">
+                    <!-- TAB: DÍA DEL EVENTO -->
+                    <div class="tab-pane fade" id="evento" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                            <h4 class="text-center mb-4">REGISTRO DÍA DEL EVENTO</h4>
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- 👇 aquí añadimos el id -->
+                            <form method="POST" action="{% url 'core:registro_evento_dia' %}" id="form-evento">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Cantidad de asistentes:</label>
+                                    <input type="number" name="cantidad" class="form-control" min="1" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Precio de entrada:</label>
+                                    <input type="number" step="0.01" name="precio" class="form-control" min="0" required>
+                                </div>
+                                <input type="hidden" name="observacion" value="evento">
+                                <button type="submit" class="btn btn-success w-100 btn-lg">
+                                    <i class="fas fa-save"></i> REGISTRAR INGRESO
+                                </button>
+                            </form>
+
+                            <!-- 👇 justo después del formulario -->
+                            <div id="evento-result"></div>
+
+                            </div>
+                        </div>
+                        </div>
+
+
+                    
+                    <!-- TAB 1: SCANNER QR -->
+                    <div class="tab-pane fade show active" id="scanner" role="tabpanel">
+                        <div class="text-center">
+                            <h4 class="mb-4">VERIFICACIÓN DE ENTRADA</h4>
+                            <div id="reader" style="width: 100%; max-width: 400px; margin: 0 auto; height: 300px;"></div>
+                            <div class="mt-3">
+                                <button id="start-btn" class="btn btn-success btn-lg me-2">
+                                    <i class="fas fa-play"></i> INICIAR SCANNER
+                                </button>
+                                <button id="stop-btn" class="btn btn-danger btn-lg" style="display:none;">
+                                    <i class="fas fa-stop"></i> DETENER
+                                </button>
+                            </div>
+                            <div id="scan-result" class="mt-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: LISTA ASISTENTES -->
+                    <div class="tab-pane fade" id="lista" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <input type="text" id="filtro-buscar" class="form-control" placeholder="Buscar por nombre o cédula...">
+                            </div>
+                            <div class="col-md-2">
+                                <select id="filtro-estado" class="form-control">
+                                    <option value="">Todos</option>
+                                    <option value="ingresados">Ingresaron</option>
+                                    <option value="pendientes">Pendientes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary me-2" onclick="cargarLista()">
+                                    <i class="fas fa-sync"></i> ACTUALIZAR
+                                </button>
+
+                
+                                <!-- REEMPLAZA el botón Excel con este -->
+                                <a href="{% url 'core:exportar_excel' %}" class="btn btn-excel" target="_blank">
+                                    <i class="fas fa-file-excel"></i> DESCARGAR EXCEL
+                                </a>
+                            </div>
+                        </div>
+                        <div id="lista-asistentes">
+                            <div class="text-center">
+                                <button class="btn btn-success" onclick="cargarLista()">
+                                    <i class="fas fa-download"></i> CARGAR LISTA COMPLETA
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: NUEVO ASISTENTE -->
+                    <div class="tab-pane fade" id="crear" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <h4 class="text-center mb-4">REGISTRAR NUEVO ASISTENTE</h4>
+                                
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <form method="POST" action="{% url 'core:crear_asistente' %}" id="form-crear">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">NOMBRE COMPLETO:</label>
+                                        <input type="text" name="nombre" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">CÉDULA:</label>
+                                        <input type="text" name="cc" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">TELÉFONO:</label>
+                                        <input type="text" name="numero" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">CATEGORÍA:</label>
+                                        <select name="categoria" class="form-control" required>
+                                            <option value="">Seleccionar...</option>
+                                            {% for categoria in categorias %}
+                                            <option value="{{ categoria.pk }}" data-precio="{{ categoria.precio }}">
+                                                {{ categoria.nombre }} 
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!-- Nuevo campo: precio pagado por la entrada -->
+                                    <div class="mb-3">
+                                        <label class="form-label">PRECIO PAGADO:</label>
+                                        <input type="number" name="consumos_disponibles" id="valor-pagado"
+                                               class="form-control" step="0.01" min="0" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100 btn-lg">
+                                        <i class="fas fa-save"></i> CREAR ASISTENTE
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: BUSCAR POR CC -->
+                    <div class="tab-pane fade" id="buscar" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <h4 class="text-center mb-4">BUSCAR POR CÉDULA</h4>
+                                <div class="input-group mb-3">
+                                    <input type="text" id="buscar-cc" class="form-control" placeholder="Número de cédula">
+                                    <button class="btn btn-primary" onclick="buscarPorCC()">
+                                        <i class="fas fa-search"></i> BUSCAR
+                                    </button>
+                                </div>
+                                <div id="resultado-cc"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 1: Verificación de Datos (NUEVO) -->
+    <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                <div class="modal-header" style="border-color: var(--border);">
+                    <h5 class="modal-title text-warning" id="verificationModalLabel">
+                        <i class="fas fa-user-check"></i> VERIFICAR ASISTENTE
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-success" id="verification-content">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer" style="border-color: var(--border);">
+                    <button type="button" class="btn btn-danger btn-lg me-2" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> CANCELAR
+                    </button>
+                    <button type="button" class="btn btn-success btn-lg" id="confirm-access">
+                        <i class="fas fa-check"></i> CONFIRMAR INGRESO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Confirmación Final -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                <div class="modal-header" style="border-color: var(--border);">
+                    <h5 class="modal-title text-success">
+                        <i class="fas fa-check-circle"></i> ACCESO AUTORIZADO
+                    </h5>
+                </div>
+                <div class="modal-body text-success" id="modal-content"></div>
+                <div class="modal-footer" style="border-color: var(--border);">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">CONTINUAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        let html5QrCode = null;
+        let isScanning = false;
+
+        const numberFormatter = new Intl.NumberFormat('es-CL');
+
+        function formatNumberElements(scope = document) {
+            scope.querySelectorAll('[data-number]').forEach(function(element) {
+                const rawValue = element.getAttribute('data-number');
+                if (rawValue === null || rawValue === '') {
+                    return;
+                }
+                const normalizedValue = String(rawValue).replace(/\./g, '').replace(/,/g, '.');
+                const numericValue = Number(normalizedValue);
+                if (!Number.isFinite(numericValue)) {
+                    return;
+                }
+                const formatted = numberFormatter.format(numericValue);
+                if (element.dataset.format === 'currency') {
+                    element.textContent = '$ ' + formatted;
+                } else {
+                    element.textContent = formatted;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            formatNumberElements();
+        });
+
+        // ===== FUNCIONES GLOBALES PARA PAGINACIÓN =====
+        window.irAPagina = function(pagina) {
+            const buscar = document.getElementById('filtro-buscar') ? document.getElementById('filtro-buscar').value : '';
+            const estado = document.getElementById('filtro-estado') ? document.getElementById('filtro-estado').value : '';
+            const items = document.getElementById('items-selector') ? document.getElementById('items-selector').value : 10;
+            
+            let url = '{% url "core:lista_asistentes" %}';
+            let params = new URLSearchParams();
+            
+            if (buscar) params.append('buscar', buscar);
+            if (estado) params.append('estado', estado);
+            if (items) params.append('items', items);
+            params.append('page', pagina);
+            
+            if (params.toString()) url += '?' + params.toString();
+            
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('lista-asistentes').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('lista-asistentes').innerHTML = 
+                    '<div class="alert alert-danger">Error cargando página</div>';
+            });
+        };
+
+        window.cambiarItems = function(items) {
+            const buscar = document.getElementById('filtro-buscar') ? document.getElementById('filtro-buscar').value : '';
+            const estado = document.getElementById('filtro-estado') ? document.getElementById('filtro-estado').value : '';
+            
+            let url = '{% url "core:lista_asistentes" %}';
+            let params = new URLSearchParams();
+            
+            if (buscar) params.append('buscar', buscar);
+            if (estado) params.append('estado', estado);
+            params.append('items', items);
+            params.append('page', 1); // Volver a página 1 al cambiar items
+            
+            if (params.toString()) url += '?' + params.toString();
+            
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('lista-asistentes').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('lista-asistentes').innerHTML = 
+                    '<div class="alert alert-danger">Error cargando lista</div>';
+            });
+        };
+
+        // ===== OTRAS FUNCIONES GLOBALES =====
+        window.marcarIngreso = function(cc) {
+            if (!confirm('¿Marcar este asistente como ingresado?')) return;
+            
+            fetch('{% url "core:marcar_ingreso" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ cc: cc })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    cargarLista(); // Recargar lista
+                    // Actualizar stats
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        };
+
+        // ===== REGISTRO DÍA DEL EVENTO =====
+        document.getElementById("form-evento").addEventListener("submit", async function(e){
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            const response = await fetch(this.action, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            const resultDiv = document.getElementById("evento-result");
+
+            if (data.success) {
+                resultDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                this.reset();
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            }
+        });
+
+
+        window.eliminarAsistente = function(cc) {
+            if (!confirm('¿ELIMINAR este asistente permanentemente?')) return;
+            
+            fetch('{% url "core:eliminar_asistente" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ cc: cc })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    cargarLista(); // Recargar lista
+                    location.reload(); // Actualizar stats
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        };
+
+        window.verQR = function(cc) {
+            fetch(`{% url "core:obtener_qr" "PLACEHOLDER" %}`.replace('PLACEHOLDER', cc))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const modalBody = `
+                        <div class="text-center">
+                            <h4>${data.asistente.nombre}</h4>
+                            <p><strong>CC:</strong> ${data.asistente.cc}</p>
+                            <p><strong>Categoría:</strong> ${data.asistente.categoria}</p>
+                            <p><strong>Consumos:</strong> ${data.asistente.consumos}</p>
+                            <div class="my-3">
+                                <img src="${data.qr_url}" alt="QR Code" style="max-width: 250px;" class="img-fluid">
+                            </div>
+                            <a href="${data.qr_url}" download="qr_${data.asistente.cc}.png" class="btn btn-primary btn-sm">
+                                <i class="fas fa-download"></i> DESCARGAR QR
+                            </a>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modal-content').innerHTML = modalBody;
+                    document.querySelector('#confirmModal .modal-title').innerHTML = 
+                        '<i class="fas fa-qrcode"></i> CÓDIGO QR';
+                    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        };
+
+        // REEMPLAZA la función editarAsistente en dashboard_entrada.html
+
+window.editarAsistente = function(cc) {
+    if (!cc) {
+        alert('Error: Cédula no válida');
+        return;
+    }
+    
+    // Mostrar modal de loading primero
+    mostrarModalLoading();
+    
+    // Cargar el contenido de la página de edición
+    const url = `{% url 'core:editar_asistente' 'PLACEHOLDER' %}`.replace('PLACEHOLDER', cc);
+    
+    fetch(url)
+    .then(response => response.text())
+    .then(html => {
+        // Extraer solo el contenido del body de la página
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Buscar el formulario y el contenido principal
+        const container = doc.querySelector('.container') || doc.body;
+        let contenido = container.innerHTML;
+        
+        // Crear el modal con el contenido
+        mostrarModalEdicion(contenido, cc);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        cerrarModalLoading();
+        alert('Error al cargar el formulario de edición');
+    });
+};
+
+function mostrarModalLoading() {
+    const loadingHtml = `
+        <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                    <div class="modal-body text-center p-5">
+                        <i class="fas fa-spinner fa-spin fa-3x text-success mb-3"></i>
+                        <h5 class="text-success">Cargando formulario de edición...</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remover modal anterior si existe
+    const existingModal = document.getElementById('editModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    document.body.insertAdjacentHTML('beforeend', loadingHtml);
+    new bootstrap.Modal(document.getElementById('editModal')).show();
+}
+
+function mostrarModalEdicion(contenido, cc) {
+    const modalHtml = `
+        <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                    <div class="modal-header" style="border-color: var(--border);">
+                        <h5 class="modal-title text-success">
+                            <i class="fas fa-edit"></i> EDITAR ASISTENTE - CC: ${cc}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                        ${contenido}
+                    </div>
+                    <div class="modal-footer" style="border-color: var(--border);">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> CERRAR
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="enviarFormularioModal()">
+                            <i class="fas fa-save"></i> GUARDAR CAMBIOS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Reemplazar modal
+    document.getElementById('editModal').outerHTML = modalHtml;
+    
+    // Mostrar modal
+    new bootstrap.Modal(document.getElementById('editModal')).show();
+    
+    // Limpiar cuando se cierre
+    document.getElementById('editModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+        if (typeof cargarLista === 'function') {
+            cargarLista();
+        }
+    });
+    
+    // Interceptar el formulario para enviarlo via AJAX
+    interceptarFormulario();
+}
+
+function interceptarFormulario() {
+    const form = document.querySelector('#editModal form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarFormularioModal();
+        });
+    }
+}
+
+function enviarFormularioModal() {
+    const form = document.querySelector('#editModal form');
+    if (!form) {
+        alert('No se encontró el formulario');
+        return;
+    }
+    
+    // Deshabilitar botón
+    const btnGuardar = document.querySelector('#editModal .btn-success');
+    const textoOriginal = btnGuardar.innerHTML;
+    btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GUARDANDO...';
+    btnGuardar.disabled = true;
+    
+    // Enviar formulario
+    const formData = new FormData(form);
+    
+    fetch(form.action || form.getAttribute('action'), {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Mostrar mensaje de éxito
+            mostrarMensajeModal('success', '✅ Asistente actualizado exitosamente');
+            
+            // Cerrar modal después de 2 segundos
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                location.reload(); // Recargar para ver cambios
+            }, 2000);
+        } else {
+            mostrarMensajeModal('error', 'Error al guardar los cambios');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensajeModal('error', 'Error de conexión');
+    })
+    .finally(() => {
+        // Restaurar botón
+        btnGuardar.innerHTML = textoOriginal;
+        btnGuardar.disabled = false;
+    });
+}
+
+function mostrarMensajeModal(tipo, mensaje) {
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = tipo === 'success' ? 'fa-check' : 'fa-exclamation-triangle';
+    
+    const mensajeHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show mt-3">
+            <i class="fas ${icon}"></i> ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Agregar mensaje al modal
+    const modalBody = document.querySelector('#editModal .modal-body');
+    if (modalBody) {
+        modalBody.insertAdjacentHTML('afterbegin', mensajeHtml);
+    }
+}
+
+function cerrarModalLoading() {
+    const modal = document.getElementById('editModal');
+    if (modal) {
+        bootstrap.Modal.getInstance(modal)?.hide();
+        modal.remove();
+    }
+}
+
+        // ===== SCANNER QR =====
+
+        document.getElementById('start-btn').onclick = function() {
+            html5QrCode = new Html5Qrcode("reader");
+            
+            // Configuración para el escáner (tamaño, fps)
+            const scannerConfig = { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 } 
+            };
+
+            // Configuración para la cámara: Pide la cámara trasera ("environment")
+            const cameraConfig = { facingMode: "environment" };
+
+            html5QrCode.start(
+                cameraConfig,   // <-- Usamos la configuración de la cámara trasera
+                scannerConfig,  // <-- Usamos la configuración del escáner
+                onScanSuccess,
+                (errorMessage) => {
+                    // Manejar errores de escaneo si es necesario
+                }
+            ).catch((err) => {
+                // Si falla al intentar usar la cámara trasera (en algunos dispositivos)
+                // intentará usar cualquier cámara disponible como plan B.
+                console.warn("No se pudo iniciar la cámara trasera, intentando con la cámara por defecto.", err);
+                html5QrCode.start(
+                    { facingMode: "user" }, // Intenta la frontal si la trasera falló
+                    scannerConfig,
+                    onScanSuccess
+                );
+            });
+
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('stop-btn').style.display = 'inline-block';
+            isScanning = true;
+            
+            document.getElementById('scan-result').innerHTML = 
+                '<div class="alert alert-success">Scanner activo - Posicione el QR frente a la cámara</div>';
+        };
+
+        document.getElementById('stop-btn').onclick = function() {
+            if (html5QrCode && isScanning) {
+                html5QrCode.stop();
+                document.getElementById('start-btn').style.display = 'inline-block';
+                document.getElementById('stop-btn').style.display = 'none';
+                isScanning = false;
+                document.getElementById('scan-result').innerHTML = '';
+            }
+        };
+
+        // ===== FUNCIÓN DE ÉXITO DEL SCANNER (MODIFICADA) =====
+        function onScanSuccess(decodedText) {
+            if (!isScanning) return;
+            isScanning = false;
+            
+            console.log('QR detectado:', decodedText);
+            
+            document.getElementById('scan-result').innerHTML = 
+                '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Verificando código QR...</div>';
+            
+            // CAMBIO AQUÍ: Llamar a verificar_qr_preview en lugar de verificar_qr
+            fetch('{% url "core:verificar_qr_preview" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ codigo: decodedText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+                
+                if (data.success) {
+                    // Guardar datos para confirmación posterior
+                    window.asistenteVerificacion = {
+                        codigo_qr: decodedText,
+                        datos: data.asistente
+                    };
+                    
+                    // Mostrar modal de verificación
+                    mostrarModalVerificacion(data.asistente);
+                    
+                    // Limpiar mensaje de estado
+                    document.getElementById('scan-result').innerHTML = '';
+                    
+                } else {
+                    // Mostrar error
+                    document.getElementById('scan-result').innerHTML = 
+                        `<div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> ${data.message}
+                            ${data.asistente ? `<br><small>Asistente: ${data.asistente.nombre}</small>` : ''}
+                        </div>`;
+                    
+                    // Reactivar scanner después de 3 segundos
+                    setTimeout(() => { 
+                        if (document.getElementById('stop-btn').style.display !== 'none') {
+                            isScanning = true; 
+                        }
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('scan-result').innerHTML = 
+                    '<div class="alert alert-danger"><i class="fas fa-wifi"></i> Error de conexión con el servidor</div>';
+                
+                // Reactivar scanner después de 3 segundos
+                setTimeout(() => { 
+                    if (document.getElementById('stop-btn').style.display !== 'none') {
+                        isScanning = true; 
+                    }
+                }, 3000);
+            });
+        }
+
+        // ===== NUEVA FUNCIÓN: MOSTRAR MODAL DE VERIFICACIÓN =====
+        function mostrarModalVerificacion(asistente) {
+            const ahora = new Date();
+            const horaActual = ahora.toLocaleTimeString('es-CO', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const fechaActual = ahora.toLocaleDateString('es-CO');
+            
+            const contenidoVerificacion = `
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card mb-3" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                            <div class="card-header">
+                                <h6 class="text-warning mb-0"><i class="fas fa-user"></i> DATOS DEL ASISTENTE</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>NOMBRE:</strong></div>
+                                    <div class="col-8">${asistente.nombre}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>CÉDULA:</strong></div>
+                                    <div class="col-8">${asistente.cc}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>TELÉFONO:</strong></div>
+                                    <div class="col-8">${asistente.numero || 'N/A'}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>CORREO:</strong></div>
+                                    <div class="col-8">${asistente.correo || 'N/A'}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>CATEGORÍA:</strong></div>
+                                    <div class="col-8">
+                                        <span class="badge bg-primary">${asistente.categoria}</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>CONSUMOS:</strong></div>
+                                    <div class="col-8">
+                                        <span class="badge bg-info">${asistente.consumos} disponibles</span>
+                                    </div>
+                                </div>
+                                ${asistente.fecha_registro ? `
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>REGISTRADO:</strong></div>
+                                    <div class="col-8">${asistente.fecha_registro}</div>
+                                </div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                            <div class="card-header">
+                                <h6 class="text-warning mb-0"><i class="fas fa-clock"></i> INGRESO</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-calendar-alt fa-2x text-primary mb-2"></i>
+                                    <div><strong>FECHA:</strong></div>
+                                    <div>${fechaActual}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                                    <div><strong>HORA:</strong></div>
+                                    <div class="fs-4 text-success" id="hora-ingreso">${horaActual}</div>
+                                </div>
+                                <div class="mb-2">
+                                    <i class="fas fa-user-tie fa-lg text-warning"></i>
+                                    <div><small>Verificado por:</small></div>
+                                    <div><strong>{{ user.username }}</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>¿Confirmar el ingreso de este asistente?</strong><br>
+                    <small>Esta acción marcará al asistente como ingresado al evento.</small>
+                </div>
+            `;
+            
+            document.getElementById('verification-content').innerHTML = contenidoVerificacion;
+            
+            // Actualizar hora cada segundo
+            const intervalId = setInterval(() => {
+                const nuevaHora = new Date().toLocaleTimeString('es-CO', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                const elementoHora = document.getElementById('hora-ingreso');
+                if (elementoHora) {
+                    elementoHora.textContent = nuevaHora;
+                } else {
+                    clearInterval(intervalId);
+                }
+            }, 1000);
+            
+            // Mostrar modal
+            const verificationModal = new bootstrap.Modal(document.getElementById('verificationModal'));
+            verificationModal.show();
+            
+            // Limpiar interval cuando se cierre el modal
+            document.getElementById('verificationModal').addEventListener('hidden.bs.modal', function() {
+                clearInterval(intervalId);
+                // Reactivar scanner si no se confirmó el ingreso
+                if (isScanning === false && document.getElementById('stop-btn').style.display !== 'none') {
+                    setTimeout(() => { isScanning = true; }, 1000);
+                }
+            });
+        }
+
+        // ===== EVENT LISTENER PARA CONFIRMAR INGRESO =====
+        document.getElementById('confirm-access').addEventListener('click', function() {
+            if (!window.asistenteVerificacion) {
+                alert('Error: No hay datos de verificación');
+                return;
+            }
+            
+            // Deshabilitar botón y mostrar loading
+            const btnConfirmar = document.getElementById('confirm-access');
+            const textoOriginal = btnConfirmar.innerHTML;
+            btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
+            btnConfirmar.disabled = true;
+            
+            // Confirmar ingreso en el servidor
+            fetch('{% url "core:confirmar_ingreso" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ 
+                    codigo: window.asistenteVerificacion.codigo_qr 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cerrar modal de verificación
+                    bootstrap.Modal.getInstance(document.getElementById('verificationModal')).hide();
+                    
+                    // Mostrar confirmación final
+                    const a = data.asistente;
+                    document.getElementById('modal-content').innerHTML = `
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                                <h2 class="text-success">${a.nombre}</h2>
+                                <p class="text-muted">¡Ingreso confirmado exitosamente!</p>
+                            </div>
+                            
+                            <div class="row text-start">
+                                <div class="col-md-6">
+                                    <div class="card mb-2" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                                        <div class="card-body">
+                                            <div class="row mb-1">
+                                                <div class="col-5"><strong>CÉDULA:</strong></div>
+                                                <div class="col-7">${a.cc}</div>
+                                            </div>
+                                            <div class="row mb-1">
+                                                <div class="col-5"><strong>CATEGORÍA:</strong></div>
+                                                <div class="col-7">${a.categoria}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-5"><strong>CONSUMOS:</strong></div>
+                                                <div class="col-7"><span class="badge bg-info">${a.consumos}</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-2" style="background: var(--panel); border: 1px solid var(--border); color: var(--text);">
+                                        <div class="card-body">
+                                            <div class="row mb-1">
+                                                <div class="col-5"><strong>HORA:</strong></div>
+                                                <div class="col-7">${a.hora}</div>
+                                            </div>
+                                            <div class="row mb-1">
+                                                <div class="col-5"><strong>FECHA:</strong></div>
+                                                <div class="col-7">${a.fecha}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-5"><strong>POR:</strong></div>
+                                                <div class="col-7">{{ user.username }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Mostrar modal de confirmación final
+                    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                    confirmModal.show();
+                    
+                    // Actualizar estadísticas después de 3 segundos
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                    
+                } else {
+                    alert('Error: ' + data.message);
+                    
+                    // Restaurar botón
+                    btnConfirmar.innerHTML = textoOriginal;
+                    btnConfirmar.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error de conexión al confirmar ingreso');
+                
+                // Restaurar botón
+                btnConfirmar.innerHTML = textoOriginal;
+                btnConfirmar.disabled = false;
+            });
+        });
+
+        // Manejar cancelación del modal de verificación
+        document.getElementById('verificationModal').addEventListener('hidden.bs.modal', function() {
+            window.asistenteVerificacion = null;
+        });
+
+        // ===== CARGAR LISTA =====
+        function cargarLista() {
+            const buscar = document.getElementById('filtro-buscar').value;
+            const estado = document.getElementById('filtro-estado').value;
+            
+            let url = '{% url "core:lista_asistentes" %}';
+            let params = new URLSearchParams();
+            if (buscar) params.append('buscar', buscar);
+            if (estado) params.append('estado', estado);
+            if (params.toString()) url += '?' + params.toString();
+            
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('lista-asistentes').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('lista-asistentes').innerHTML = 
+                    '<div class="alert alert-danger">Error cargando lista</div>';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            // Cargar lista automáticamente al abrir la página para mayor fluidez
+            if (document.getElementById('lista-asistentes')) {
+                cargarLista();
+            }
+        });
+
+        // ===== DESCARGAR EXCEL =====
+
+        function descargarExcel() {
+            const btn = event.target;
+            const textoOriginal = btn.innerHTML;
+            
+            // Mostrar loading
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GENERANDO...';
+            btn.disabled = true;
+            
+            // Método más robusto para descargar
+            fetch('{% url "core:exportar_excel" %}', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Crear URL del blob y descargar
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `asistentes_dmt69_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                
+                // Mostrar mensaje de éxito
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    <i class="fas fa-check"></i> Archivo Excel descargado exitosamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+                
+                // Auto-remove alert after 3 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al generar el archivo Excel. Verifica que:\n1. La URL esté configurada correctamente\n2. El servidor esté funcionando\n3. Tengas permisos para descargar archivos');
+            })
+            .finally(() => {
+                // Restaurar botón
+                setTimeout(() => {
+                    btn.innerHTML = textoOriginal;
+                    btn.disabled = false;
+                }, 1000);
+            });
+        }
+
+
+        // ===== BUSCAR POR CC =====
+        function buscarPorCC() {
+            const cc = document.getElementById('buscar-cc').value.trim();
+            if (!cc) return;
+            
+            fetch(`{% url "core:buscar_asistente" %}?cc=${cc}`)
+            .then(response => response.json())
+            .then(data => {
+                const resultado = document.getElementById('resultado-cc');
+                if (data.success) {
+                    const a = data.asistente;
+                    resultado.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>${a.nombre}</h5>
+                                <p><strong>CC:</strong> ${a.cc}</p>
+                                <p><strong>Categoría:</strong> ${a.categoria}</p>
+                                <p><strong>Estado:</strong> 
+                                    <span class="badge ${a.ha_ingresado ? 'bg-success' : 'bg-warning'}">
+                                        ${a.ha_ingresado ? 'INGRESÓ' : 'PENDIENTE'}
+                                    </span>
+                                </p>
+                                ${a.fecha_ingreso ? '<p><strong>Fecha ingreso:</strong> ' + a.fecha_ingreso + '</p>' : ''}
+                                <p><strong>Consumos disponibles:</strong> ${a.consumos}</p>
+                                <div class="mt-3">
+                                    <a href="/asistentes/${a.cc}/qr/" class="btn btn-info btn-sm">VER QR</a>
+                                    <a href="/asistentes/${a.cc}/editar/" class="btn btn-warning btn-sm">EDITAR</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultado.innerHTML = '<div class="alert alert-danger">' + data.message + '</div>';
+                }
+            });
+        }
+
+        // Auto-reload stats cada 30 segundos
+        setInterval(() => {
+            if (!isScanning) {
+                fetch('{% url "core:dashboard" %}')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const nuevoResumen = doc.querySelector('#dashboard-resumen');
+                        const resumenActual = document.querySelector('#dashboard-resumen');
+                        if (nuevoResumen && resumenActual) {
+                            const resumenClonado = nuevoResumen.cloneNode(true);
+                            resumenActual.replaceWith(resumenClonado);
+                            formatNumberElements();
+                            if (window.bootstrap && bootstrap.Collapse) {
+                                resumenClonado.querySelectorAll('.collapse').forEach(function(el) {
+                                    bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+                                });
+                            }
+                        }
+                    })
+                    .catch(() => {});
+            }
+        }, 30000);
+
+        // ===== ACTUALIZAR PRECIO PAGADO SEGÚN CATEGORÍA =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectCategoria = document.querySelector('#form-crear select[name="categoria"]');
+            const valorPagadoInput = document.getElementById('valor-pagado');
+            // Obtener el diccionario de precios enviado desde el backend
+            let preciosDict = {};
+            try {
+                preciosDict = JSON.parse('{{ categoria_precios_json|default:"{}"|safe }}');
+            } catch (e) {
+                preciosDict = {};
+            }
+            if (selectCategoria && valorPagadoInput) {
+                selectCategoria.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const catId = this.value;
+                    let precio = '';
+                    // 1) Intentar leer el atributo data-precio del option
+                    if (selectedOption) {
+                        precio = selectedOption.getAttribute('data-precio');
+                    }
+                    // 2) Si no existe o está vacío, buscar en el diccionario del contexto
+                    if (!precio) {
+                        if (catId && Object.prototype.hasOwnProperty.call(preciosDict, catId)) {
+                            precio = preciosDict[catId];
+                        }
+                    }
+                    // Si no se encontró precio, avisar en consola y dejar el campo vacío
+                    if (!precio) {
+                        console.warn(`[AUTO-PRECIO] No se encontró precio para la categoría con id=${catId}.`, {
+                            optionDataPrecio: selectedOption ? selectedOption.getAttribute('data-precio') : null,
+                            preciosDict: preciosDict
+                        });
+                        valorPagadoInput.value = '';
+                    } else {
+                        // Convertir a número. Limpia puntos como separadores de miles y convierte comas en punto decimal
+                        let precioStr = String(precio);
+                        // Elimina cualquier espacio
+                        precioStr = precioStr.trim();
+                        // Elimina separadores de miles (puntos)
+                        precioStr = precioStr.replace(/\./g, '');
+                        // Convierte comas decimales en puntos
+                        precioStr = precioStr.replace(/,/g, '.');
+                        const parsed = parseFloat(precioStr);
+                        if (!isNaN(parsed)) {
+                            valorPagadoInput.value = parsed;
+                        } else {
+                            console.warn(`[AUTO-PRECIO] No se pudo convertir el precio '${precio}' a número para la categoría id=${catId}.`);
+                            valorPagadoInput.value = '';
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
