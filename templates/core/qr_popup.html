@@ -34,6 +34,23 @@
         .btn-success { background: var(--secondary); border-color: var(--secondary); color:#0a1323; font-weight:700; }
         .btn-success:hover { background:#7fa7cc; border-color:#7fa7cc; color:#04101d; }
         .text-muted { color: var(--muted)!important; }
+        .qr-frame {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        .qr-image {
+            width: 100%;
+            max-width: 360px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            image-rendering: crisp-edges;
+        }
     </style>
 </head>
 <body class="d-flex align-items-center justify-content-center" style="min-height:100vh; padding:16px;">
@@ -49,8 +66,9 @@
             <div class="row g-4 align-items-center">
                 <div class="col-lg-6 text-center">
                     {% if asistente.qr_image %}
-                    <img src="{{ asistente.qr_image.url }}" alt="QR {{ asistente.nombre }}" class="img-fluid"
-                         style="width:420px; height:420px; max-width:100%; border:1px solid var(--border); border-radius:14px; padding:12px; background:rgba(255,255,255,0.02);">
+                    <div class="qr-frame mx-auto">
+                        <img src="{{ asistente.qr_image.url }}" alt="QR {{ asistente.nombre }}" class="qr-image" loading="lazy">
+                    </div>
                     {% else %}
                     <div class="alert alert-warning mb-0">QR no disponible</div>
                     {% endif %}
@@ -72,9 +90,11 @@
         </div>
         <div class="card-footer d-flex justify-content-end gap-2" style="border-color:var(--border);">
             {% if asistente.qr_image %}
-            <a class="btn btn-primary" href="{{ asistente.qr_image.url }}" download="qr_{{ asistente.cc }}.png">
-                <i class="fas fa-download"></i> Descargar QR
-            </a>
+            {% with download_url=qr_image_abs|default:asistente.qr_image.url %}
+                <a id="btn-download-qr" class="btn btn-primary" href="{{ download_url }}" data-download-url="{{ download_url }}">
+                    <i class="fas fa-download"></i> Descargar QR
+                </a>
+            {% endwith %}
             {% endif %}
             {% if whatsapp_url %}
             <a class="btn btn-success" target="_blank" rel="noreferrer" href="{{ whatsapp_url }}">
@@ -89,6 +109,8 @@
         document.addEventListener('DOMContentLoaded', function(){
             const btnClose = document.getElementById('btn-close-popup');
             const fallback = "{% url 'core:dashboard' %}#lista";
+            const downloadBtn = document.getElementById('btn-download-qr');
+
             btnClose.addEventListener('click', function(){
                 if (window.opener) {
                     window.close();
@@ -98,6 +120,31 @@
                     window.location.href = fallback;
                 }
             });
+
+            if (downloadBtn) {
+                const downloadUrl = downloadBtn.getAttribute('data-download-url');
+                downloadBtn.addEventListener('click', async function (event) {
+                    if (!downloadUrl) return;
+                    event.preventDefault();
+
+                    try {
+                        const response = await fetch(downloadUrl, { credentials: 'include' });
+                        if (!response.ok) throw new Error('Download failed');
+
+                        const blob = await response.blob();
+                        const blobUrl = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = `qr_{{ asistente.cc }}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(blobUrl);
+                    } catch (error) {
+                        window.location.href = downloadUrl;
+                    }
+                });
+            }
         });
     </script>
 </body>

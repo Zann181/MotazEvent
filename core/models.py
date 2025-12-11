@@ -211,8 +211,30 @@ class Asistente(models.Model):
         except Exception as e:
             print(f"Error cargando ZANN.png: {e}, QR sin logo central")
         
-        # Convertir a RGB para guardar (solo QR, sin texto)
-        final_img = qr_img.convert('RGB')
+        # Añadir fecha debajo del QR en una franja del mismo ancho
+        date_text = "12/12/2025"
+        band_height = 72  # espacio para texto y padding
+        final_img = Image.new('RGB', (qr_size, qr_size + band_height), "#f5f7fb")
+        final_img.paste(qr_img.convert('RGB'), (0, 0))
+
+        try:
+            # Intentar una fuente TTF legible; si no, usar la predeterminada
+            font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'Inter-Bold.ttf')
+            if os.path.exists(font_path):
+                font = ImageFont.truetype(font_path, 42)
+            else:
+                font = ImageFont.truetype("arial.ttf", 42)
+        except Exception:
+            font = ImageFont.load_default()
+
+        draw = ImageDraw.Draw(final_img)
+        text_bbox = draw.textbbox((0, 0), date_text, font=font)
+        text_w = text_bbox[2] - text_bbox[0]
+        text_h = text_bbox[3] - text_bbox[1]
+        text_x = (qr_size - text_w) // 2
+        text_y = qr_size + (band_height - text_h) // 2
+
+        draw.text((text_x, text_y), date_text, fill="#0f2338", font=font)
         
         # Guardar en buffer
         buffer = BytesIO()
